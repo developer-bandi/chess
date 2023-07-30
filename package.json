@@ -1,0 +1,14 @@
+{
+  "name": "lotto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "App.js",
+  "scripts": {
+    "start": "npx tsc && node ./dist/App.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.4.2"
+  }
+}

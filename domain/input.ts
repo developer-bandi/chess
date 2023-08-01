@@ -19,10 +19,8 @@ class Input {
     );
   }
 
-  namesQuery() {
-    return this.promiseQuery(
-      "길이에 맞게 이름을 공백으로 구분하여 넣어주세요\n"
-    );
+  realMoveQuery() {
+    return this.promiseQuery("이동하고자 하는 칸을 입력해주세요(예:2 2)\n");
   }
 
   resultsQuery() {

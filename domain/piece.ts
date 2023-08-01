@@ -226,8 +226,6 @@ export class Knight extends Piece {
     ];
   }
 
-  move(): void {}
-
   getPossibleMoveList(board: any) {}
 
   attack(): void {}
@@ -257,6 +255,10 @@ export class Pawn extends Piece {
 
   attack(): void {}
 
+  public move(x: number, y: number, board: Board): void {
+    super.move(x, y, board);
+    this.firstMove = false;
+  }
   makeName() {
     if (this.color === "white") return "P";
     return "p";

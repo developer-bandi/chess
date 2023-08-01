@@ -16,9 +16,8 @@ export abstract class Piece {
 
   public move(x: number, y: number, board: Board) {
     const boardWithPiece = board.makeBoardArray();
-    if (boardWithPiece[x][y] !== undefined) {
-      boardWithPiece[x][y].dead();
-    }
+    boardWithPiece[x][y]?.dead();
+    console.log(x, y);
     this.position.moveTo(x, y);
   }
 
@@ -26,7 +25,7 @@ export abstract class Piece {
     this.position.delete();
   }
 
-  public markPositionToBoard(board: Piece[][]) {
+  public markPositionToBoard(board: (Piece | null)[][]) {
     const [x, y] = this.position.getPosition();
     board[x][y] = this;
   }
@@ -46,7 +45,11 @@ export abstract class Piece {
     return this.position.isDeleted();
   }
 
-  protected moveDirection(dx: number, dy: number, boardWithPiece: Piece[][]) {
+  protected moveDirection(
+    dx: number,
+    dy: number,
+    boardWithPiece: (Piece | null)[][]
+  ) {
     const result = [];
     const [x, y] = this.position.getPosition();
     const curPosition = new Position(x, y, 8);
@@ -56,8 +59,9 @@ export abstract class Piece {
 
       if (movePosition === null) break;
       if (boardWithPiece[movePosition[0]][movePosition[1]] !== undefined) {
+        if (boardWithPiece[movePosition[0]][movePosition[1]] === null) break;
         if (
-          boardWithPiece[movePosition[0]][movePosition[1]].isSameColor(
+          boardWithPiece[movePosition[0]][movePosition[1]]?.isSameColor(
             this.color
           )
         )
@@ -107,7 +111,8 @@ export class King extends Piece {
       .filter((value): value is number[] => {
         if (value === null) return false;
         const [x, y] = value;
-        if (boardWithPiece[x][y].isSameColor(this.color)) return false;
+        if (boardWithPiece[x][y] === null) return false;
+        if (boardWithPiece[x][y]?.isSameColor(this.color)) return false;
         return true;
       });
   }
@@ -248,8 +253,6 @@ export class Pawn extends Piece {
     this.firstMove = true;
   }
 
-  move(): void {}
-
   getPossibleMoveList(board: any) {}
 
   attack(): void {}
@@ -274,7 +277,8 @@ export class Pawn extends Piece {
         .filter(([x, y]) => {
           const targetPiece = boardWithPiece[x][y];
           if (targetPiece === undefined) return false;
-          return !boardWithPiece[x][y].isSameColor(this.color);
+          if (boardWithPiece[x][y] === null) return false;
+          return !boardWithPiece[x][y]?.isSameColor(this.color);
         })
         .forEach((value) => {
           result.push(value);
@@ -285,13 +289,13 @@ export class Pawn extends Piece {
         const targetPiece1 =
           boardWithPiece[oneMovePosition[0]][oneMovePosition[1]];
 
-        if (targetPiece1 === undefined) {
+        if (targetPiece1 === null) {
           result.push(oneMovePosition);
           const twoMovePosition = this.position.addReturn(2, 0);
           if (twoMovePosition !== null) {
             const targetPiece2 =
               boardWithPiece[twoMovePosition[0]][twoMovePosition[1]];
-            if (targetPiece1 === undefined) {
+            if (targetPiece2 === null) {
               result.push(twoMovePosition);
             }
           }
@@ -300,7 +304,7 @@ export class Pawn extends Piece {
 
       return result;
     } else {
-      const result = [];
+      const result: any = [];
 
       [
         [-1, -1],
@@ -311,7 +315,8 @@ export class Pawn extends Piece {
         .filter(([x, y]) => {
           const targetPiece = boardWithPiece[x][y];
           if (targetPiece === undefined) return false;
-          return !boardWithPiece[x][y].isSameColor(this.color);
+          if (boardWithPiece[x][y] === null) return false;
+          return !boardWithPiece[x][y]?.isSameColor(this.color);
         })
         .forEach((value) => {
           result.push(value);
@@ -321,15 +326,17 @@ export class Pawn extends Piece {
       if (oneMovePosition !== null) {
         const targetPiece1 =
           boardWithPiece[oneMovePosition[0]][oneMovePosition[1]];
-
-        if (targetPiece1 === undefined) {
+        if (targetPiece1 === null) {
           result.push(oneMovePosition);
-          const twoMovePosition = this.position.addReturn(-2, 0);
-          if (twoMovePosition !== null) {
-            const targetPiece2 =
-              boardWithPiece[twoMovePosition[0]][twoMovePosition[1]];
-            if (targetPiece1 === undefined) {
-              result.push(twoMovePosition);
+          if (this.firstMove) {
+            const twoMovePosition = this.position.addReturn(-2, 0);
+
+            if (twoMovePosition !== null) {
+              const targetPiece2 =
+                boardWithPiece[twoMovePosition[0]][twoMovePosition[1]];
+              if (targetPiece2 === null) {
+                result.push(twoMovePosition);
+              }
             }
           }
         }

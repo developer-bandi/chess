@@ -12,7 +12,9 @@ class Board {
   }
 
   makeBoardArray() {
-    const board = new Array(8).fill(0).map(() => new Array<Piece>(8));
+    const board = new Array(8)
+      .fill(0)
+      .map(() => new Array<Piece | null>(8).fill(null));
     this.pieces
       .filter((piece) => !piece.isDead())
       .forEach((piece) => piece.markPositionToBoard(board));

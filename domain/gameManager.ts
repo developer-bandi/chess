@@ -26,6 +26,7 @@ class GameManager {
     console.log(viewBoard);
     const inputValue = await input.possibleMoveQuery();
     const [x, y] = inputValue.split(" ").map(Number);
+    console.log(board[x][y]);
     console.log(
       "가능한 이동경로는 다음과같습니다",
       board[x][y]?.getPossibleMove(this.board)

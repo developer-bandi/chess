@@ -27,12 +27,6 @@ class Position {
     this.y = this.y + dy;
   }
 
-  // writePositionToBoard(board: any[][], name: string) {
-  //   board[this.x][this.y] = name;
-
-  //   return board;
-  // }
-
   isEqual(x: number, y: number) {
     return this.x === x && this.y === y;
   }
@@ -49,7 +43,7 @@ class Position {
     const newX = x + this.x;
     const newY = y + this.y;
 
-    if (newX < 0 || newX > 7 || newY < 0 || newY < 0) return null;
+    if (newX < 0 || newX > 7 || newY < 0 || newY > 7) return null;
     return [newX, newY];
   }
 }

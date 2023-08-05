@@ -1,4 +1,4 @@
-import { Piece } from "./piece";
+import { King, Piece } from "./piece";
 
 class Board {
   pieces: Piece[];
@@ -20,6 +20,14 @@ class Board {
       .forEach((piece) => piece.markPositionToBoard(board));
 
     return board;
+  }
+
+  checkKingExist() {
+    const piece = this.pieces.find(
+      (piece) => piece instanceof King && piece.isDead()
+    );
+    if (!piece) return false;
+    return piece.color;
   }
 }
 

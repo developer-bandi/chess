@@ -10,7 +10,6 @@ export abstract class Piece {
     this.color = color;
   }
 
-  abstract attack(): void;
   abstract makeName(): string;
   abstract getPossibleMove(board: Board): number[][];
 
@@ -58,22 +57,22 @@ export abstract class Piece {
       const movePosition = curPosition.addReturn(dx, dy);
 
       if (movePosition === null) break;
-      if (boardWithPiece[movePosition[0]][movePosition[1]] !== undefined) {
-        if (boardWithPiece[movePosition[0]][movePosition[1]] === null) break;
+      if (boardWithPiece[movePosition[0]][movePosition[1]] !== null) {
         if (
           boardWithPiece[movePosition[0]][movePosition[1]]?.isSameColor(
             this.color
           )
-        )
+        ) {
           break;
-        result.push(movePosition);
-        break;
+        } else {
+          result.push(movePosition);
+          break;
+        }
       }
 
       result.push(movePosition);
       curPosition.moveToParamAmount(dx, dy);
     }
-
     return result;
   }
 }
@@ -94,10 +93,6 @@ export class King extends Piece {
       [0, 1],
     ];
   }
-
-  getPossibleMoveList(board: any) {}
-
-  attack(): void {}
 
   makeName() {
     if (this.color === "white") return "K";
@@ -122,12 +117,6 @@ export class Queen extends Piece {
   constructor(x: number, y: number, size: number, color: string) {
     super(x, y, size, color);
   }
-
-  move(): void {}
-
-  getPossibleMoveList(board: any) {}
-
-  attack(): void {}
 
   makeName() {
     if (this.color === "white") return "Q";
@@ -156,12 +145,6 @@ export class Rook extends Piece {
     super(x, y, size, color);
   }
 
-  move(): void {}
-
-  getPossibleMoveList(board: any) {}
-
-  attack(): void {}
-
   makeName() {
     if (this.color === "white") return "R";
     return "r";
@@ -184,12 +167,6 @@ export class Bishop extends Piece {
   constructor(x: number, y: number, size: number, color: string) {
     super(x, y, size, color);
   }
-
-  move(): void {}
-
-  getPossibleMoveList(board: any) {}
-
-  attack(): void {}
 
   makeName() {
     if (this.color === "white") return "B";
@@ -226,10 +203,6 @@ export class Knight extends Piece {
     ];
   }
 
-  getPossibleMoveList(board: any) {}
-
-  attack(): void {}
-
   makeName() {
     if (this.color === "white") return "N";
     return "n";
@@ -239,7 +212,12 @@ export class Knight extends Piece {
     const boardWithPiece = board.makeBoardArray();
     return this.possibleMove
       .map(([x, y]) => this.position.addReturn(x, y))
-      .filter((value): value is number[] => !!value);
+      .filter((value): value is number[] => !!value)
+      .filter((value) => {
+        const piece = boardWithPiece[value[0]][value[1]];
+        if (piece !== null && piece.isSameColor(this.color)) return false;
+        return true;
+      });
   }
 }
 
@@ -250,10 +228,6 @@ export class Pawn extends Piece {
     super(x, y, size, color);
     this.firstMove = true;
   }
-
-  getPossibleMoveList(board: any) {}
-
-  attack(): void {}
 
   public move(x: number, y: number, board: Board): void {
     super.move(x, y, board);
@@ -278,9 +252,12 @@ export class Pawn extends Piece {
         .filter((value): value is number[] => !!value)
         .filter(([x, y]) => {
           const targetPiece = boardWithPiece[x][y];
-          if (targetPiece === undefined) return false;
-          if (boardWithPiece[x][y] === null) return false;
-          return !boardWithPiece[x][y]?.isSameColor(this.color);
+          if (
+            targetPiece !== null &&
+            !boardWithPiece[x][y]?.isSameColor(this.color)
+          )
+            return true;
+          return false;
         })
         .forEach((value) => {
           result.push(value);
@@ -293,12 +270,14 @@ export class Pawn extends Piece {
 
         if (targetPiece1 === null) {
           result.push(oneMovePosition);
-          const twoMovePosition = this.position.addReturn(2, 0);
-          if (twoMovePosition !== null) {
-            const targetPiece2 =
-              boardWithPiece[twoMovePosition[0]][twoMovePosition[1]];
-            if (targetPiece2 === null) {
-              result.push(twoMovePosition);
+          if (this.firstMove) {
+            const twoMovePosition = this.position.addReturn(2, 0);
+            if (twoMovePosition !== null) {
+              const targetPiece2 =
+                boardWithPiece[twoMovePosition[0]][twoMovePosition[1]];
+              if (targetPiece2 === null) {
+                result.push(twoMovePosition);
+              }
             }
           }
         }
@@ -316,9 +295,12 @@ export class Pawn extends Piece {
         .filter((value): value is number[] => !!value)
         .filter(([x, y]) => {
           const targetPiece = boardWithPiece[x][y];
-          if (targetPiece === undefined) return false;
-          if (boardWithPiece[x][y] === null) return false;
-          return !boardWithPiece[x][y]?.isSameColor(this.color);
+          if (
+            targetPiece !== null &&
+            !boardWithPiece[x][y]?.isSameColor(this.color)
+          )
+            return true;
+          return false;
         })
         .forEach((value) => {
           result.push(value);
